@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-control" content="no-cache">
+		<meta http-equiv="Cache" content="no-cache">		
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>中国民生银行收银台</title>
+    	<link rel="stylesheet" href="css/bootstrap.css" >
+    	<link rel="stylesheet" href="css/bootstrap-responsive.css" >
+   	 	<link rel="stylesheet" href="css/iconfont.css" >
+   	 	<link rel="stylesheet" href="css/styles.css">
+   	 	<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.js"></script>
+   		<script src="js/json2.js" ></script>  
+   		<script src="js/security/CFCASIPInput.min.js"></script> 	 	
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	    <!--[if lt IE 9]>
+	      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+		<script type="text/javascript">
+		var localstorage = window.localStorage;//本地session存储
+		var sipInput;
+		var serverRandom;
+		var serverRandomTaskId;
+		var phoneTaskId;//记录手机验证码的TaskTd
+		//获取随机数
+		function setRan(){
+   			$.ajax({
+	   				type:"POST",
+	   				url:"../gwserver.do",
+	   				dataType:"json",
+	   				contentType:"application/json",
+	   				data:"{\"sessionId\":\"\",\"encryptType\":\"0\",\"context\":{\"head\":{\"userAgent\":\"Android\",\"imageCode\":\"\",\"type\":\"GWRANDOM\",\"version\":\"1.0\",\"randomTaskId\":\"\",\"serviceId\":\"lcbp\",\"appVersion\":\"1\",\"token\":\"\",\"userId\":\"\",\"randomCode\":\"\",\"appType\":\"lcbp\",\"channel\":\"01\",\"checkTokenFlag\":\"0\",\"imageTaskId\":\"\"},\"body\":{\"type\":\"0\",\"randomLength\":\"16\"}}}",
+	   				success:function(data){ 
+	   					if(data.resCode == 'S'){
+	   	                	serverRandom = data.context.randomNum;
+	   	                	serverRandomTaskId = data.context.taskId;
+	   	                	$("#serverRandom").val(serverRandom);
+	   	                	$("#serverRandom_taskid").val(serverRandomTaskId);
+	   	                    sipInput.clearInputValue('SIPBox1');
+	   	                    sipInput.setServerRandom('SIPBox1', serverRandom);
+	   	                }	   									
+	   				}
+   			});
+		}  
+		
+		$(function(){
+   			//初始化控件
+   			showBg("页面加载中...");
+   			//是否取消copyright
+   			var hiddenflag=localstorage.getItem("hiddenflag");
+   			if(hiddenflag=='1'){
+   				$('#footer_id').hide();
+   			}
+   			
+		    //密码控件的操作
+		    sipInput = new CFCASIPInput('SIPBox1', 0);//初始化密码控件
+		    // 用于解密
+		    var RSA_PUBLIC_KEY = "30818702818100BB8A4755A8425B251EFE01C0849AD34422D64F7231BC7317D7ECC7679F35445A5DB7890F935883D00B69B5A28C5C6B3659A71B74499E7CC297F66241999E66A3EEF09392FE7CB4C1020555399A8D50A7DE466E935EA86CDD53A510A07C1DCBEAF92934D09AD47A21C6369BDEA1197975DEF797DE43644CF49FEE2377B14A72FF020103";
+		    var RSA_PUBLIC_KEY_SIG = "ABB361F10F8C9A7A4EA7384459699793BF9FE49D71496B5DB00D1F58EB835371B144180F9862A8F822E8C3770AC9AE43DF6F223E0A03CE6EAF2D8711D254A47A56024741F5D1515D8000DB58B315F10BEDBF78F68ED6CA486C7A5C25E65A5D13CCDCA2DFEF527AA636339E49B20DE2FA6AE6B8AA620FEE3E8C1E00BD0E971338";
+
+		    setRan();//设置随机数
+		    // sipInput.showKeyboard('input1',serverRandom);//显示软键盘
+		    sipInput.setMinLength('SIPBox1', 6);//设置密码最小长度
+		    sipInput.setMaxLength('SIPBox1', 20);//设置密码最大长度
+		    sipInput.setPublicKey('SIPBox1', 1, RSA_PUBLIC_KEY, RSA_PUBLIC_KEY_SIG);//设置输出类型
+		    hiddenBg();
+		  	//生成图片验证码
+   			//changeCode();
+		});		
+		    
+
+	    </script>	       
+	</head>
+	<body style="width:99.0%;height: 300px;">
+		<div class="navbar navbar-inverse navbar-static-top nav-style" style="position:absolute; width:100%; left:0; top:0; overflow:hidden;">
+			<div class="navbar-inner navbar-header">
+				<div class="container">
+					<a class="brand logo-padd" href="javascript:void(0);"><img src="img/logo.png" style="border: 0px;" width="240"></a>
+					<!-- <a class="change-password" href="javascript:void(0);" style="visibility: hidden;">修改密码</a> -->
+					<div class="pull-right username" style="visibility: hidden;">
+						<i class="iconfont">&#xe600;</i>
+						<span>收银员：***</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container" style="padding-top:80px;">
+			<div class="sign-in common_show_id">
+				<div class="tab-pos">
+					<img src="img/sign-in_03.png" />
+				</div>
+				<form class="form-horizontal login-box">
+                    <div class="control-group" style="display: none;margin-bottom:2px;margin-left: 60px; overflow: hidden;width: 400px;" id="login_error_id_1" >
+                        <div class="controls" style="color: red;float: left;width: 250px;display:inline;margin-left: 15px;" id="login_error_id_2">
+                        	******
+                   		</div>
+                    </div>		
+                    <div class="control-group1 login_common_1">
+                        <label class="control-label1">登录账号:</label>
+                        <div class="controls1">
+                        	<input type="text" class="input3" id="userName" name="userName" value="">
+                        </div>
+                    </div>
+                    <div class="control-group2 login_common_1">
+                        <label class="control-label1">登录密码:</label>
+                        <div class="controls1">
+                        	<input type="password" class="input3" id="SIPBox1" name="SIPBox1"  value="" oncopy="return false;" onpaste="return false;" oncut="return false;"/>
+                   		</div>
+                    </div>
+                    <div class="control-group login_common_2" style="display: none;margin-left: 60px; overflow: hidden;width: 400px;">
+                        <label class="control-label" for="validatecode_phone" style="float: left;width: 70px;display:inline;">验证码:</label>
+                        <div class="controls" style="float: left;width: 300px;display:inline;margin-left: 15px;">
+                       		<input type="text" id="validatecode_phone" name="validatecode_phone" class="input4">
+                       		<span class="icode" id="sendCode" >获取验证码</span>
+                   		</div>
+                    </div>  
+                    <div class="control-group login_common_3" style="display: none;margin-left: 60px; overflow: hidden;width: 400px;">
+                        <label class="control-label" for="validatecode" style="float: left;width: 70px;display:inline;" >图形码:</label>
+                        <div class="controls" style="float: left;width: 300px;display:inline;margin-left: 15px;">
+                       		<input type="text" id="validatecode" name="validatecode" class="input4">
+                       		<span class="icode"><img id="create_image_id" onclick="changeCode()" src="img/fujia_03.png" style="cursor: pointer;"></span>
+                   		</div>
+                    </div>                                                          
+                </form>
+                <div class="btngroup">
+	                	<button type="submit" class="btn1 marginr10 login_common_1" onclick="login()">登&nbsp;&nbsp;&nbsp;录</button>
+	                	<!-- <button type="submit" class="btn2">注&nbsp;&nbsp;&nbsp;册</button> -->
+	                	<button type="button" id="submitCode" class="btn1 marginr10 login_common_2" style="display: none;" onclick="tCode()">确&nbsp;&nbsp;&nbsp;定</button>
+	                	<button type="button" id="submitCode" class="btn1 marginr10 login_common_3" style="display: none;" onclick="yCode()">发送短信</button>
+                </div>
+			</div>
+			<div class="sub" id="loading_id" style="display: none">
+				<img src="img/MSLoad1.gif" class="s-img"></img>
+				<p id="loading_msg_id">正在提交...</p>
+			</div>			
+		</div>
+		<div class="footer"  id="footer_id">
+			Copyright&copy;版权所有&nbsp;中国民生银行&nbsp;|&nbsp;24小时客服服务热线 95568
+		</div>
+   		<script src="js/util/common.js?v=1.0" ></script>
+   		<script src="js/weblsylogin.js?v=1.0" ></script>
+   		<script type="text/javascript">			
+    		//登录用户
+    		function LoginMember(){
+    			this.account_no="";
+    			this.login_password="";
+    			this.random_num="";
+    			this.account_type="";
+    			this.taskid="";
+    		}
+    		
+   		</script>
+   		<script type="text/javascript">
+   			//document.body.addEventListener('touchstart', function () { });  //保证手机端按钮或链接active效果
+   			
+   			var flag = true;
+   			function login(){
+   				if($("#userName").val()=='' || $("#userName").val()==undefined){
+                	$("#login_error_id_1").show();
+                	$("#login_error_id_2").html("请输入登录账号");  
+                	return;
+   				}
+            	$("#login_error_id_1").hide();
+            	$("#login_error_id_2").html('');   
+   				showBg("正在提交...");
+   		        var encryptedInputValue = sipInput.getEncryptedInputValue("SIPBox1");
+   		        var errorCode = sipInput.getErrorCode("SIPBox1").toString(16);
+   		     	if (errorCode != CFCA_OK) {
+                	$("#login_error_id_1").show();
+                	$("#login_error_id_2").html("请输入正确格式的密码");   		     		
+   		     		hiddenBg();
+   		     		return;
+   		     	}
+   		     	setRan();//密码控件设置随机数
+   		     	
+   				if(flag){
+   					flag = false;
+   					
+   					var loginMember = new LoginMember();
+   					loginMember.account_no= $("#userName").val();   					
+   					loginMember.login_password=encryptedInputValue+"";
+   					loginMember.random_num=$("#serverRandom").val();
+   					loginMember.taskid=$("#serverRandom_taskid").val();
+   					loginMember.account_type="02";
+   					
+   					var loginMemberJson = createJson(loginMember.account_no,
+   							loginMember.random_num,
+   							loginMember.taskid,
+   							loginMember.login_password,
+   							$("#validatecode").val(),
+   							$("#serverImageRandom_taskid").val());
+   					
+   		   			$.ajax({
+   	   	   				type:"POST",
+   	   	   				url:"../gwserver.do",
+   	   	   				dataType:"json",
+   	   	   				contentType:"application/json",
+   	   	   				data:JSON.stringify(loginMemberJson),
+   	   	   				success:function(data){ 
+								try{
+									if(data.resCode!='S'){
+		                            	flag = true;
+		                            	sipInput.clearInputValue('SIPBox1');
+		                            	if(data.resCode=='REQ0001'||data.resCode=='REQ0002'||data.resCode=='REQ0003'||data.resCode=='REQ0004'||data.resCode=='REQ0005'||data.resCode=='REQ1012'||data.resCode=='REQ1014'||data.resCode=='REQ1015'){
+		                            		window.location.reload(true);
+		                            	}
+			                        	$("#login_error_id_1").show();
+			                        	$("#login_error_id_2").html("登陆失败");		
+			                        	hiddenBg();
+			                        	return;
+									}
+		                            if(data.context != ''){
+		                                if(data.context.body.returnCode.type== 'S'){
+		                                	$("#login_error_id_2").html('');	
+		                                	hiddenBg();
+		                                	localstorage.setItem('token_flag','0');
+		                                    //如果成功
+		                                    localstorage.setItem('token',data.context.head.token);
+		                                    localstorage.setItem('user_tel',data.context.body.userTel);
+		                                    localstorage.setItem('lastLoginTime',data.context.body.lastLoginTime);
+		                                    localstorage.setItem('userChName',data.context.body.userChName);
+		                                    localstorage.setItem('userId',$("#userName").val());
+		                                    //successLogin();
+		                                    yImage();
+		                                }else{
+		                                	flag = true;
+		                                	sipInput.clearInputValue('SIPBox1');
+				                        	$("#login_error_id_1").show();
+				                        	$("#login_error_id_2").html(data.context.body.returnCode.message);
+				                        	hiddenBg();
+		                                    //changeCode();
+		                                }
+		                            }else{
+		                            	flag = true;
+		                            	sipInput.clearInputValue('SIPBox1');
+			                        	$("#login_error_id_1").show();
+			                        	$("#login_error_id_2").html('登录失败');		
+			                        	hiddenBg();
+		                            }
+   								}catch(e){
+   									flag = true;
+   									//changeCode();
+   									sipInput.clearInputValue('SIPBox1');
+		                        	$("#login_error_id_1").show();
+		                        	$("#login_error_id_2").html('登录失败'); 
+		                        	hiddenBg();
+   								}   	   	   					
+   	   	   				}
+   		   			});
+   				}
+   			}
+   			var onOff = true;//控制短信验证的开关  false==不允许点击发送短信按钮
+   		    var sendCode = $("#sendCode");//获取验证码按钮
+   	       	var submitCode =$('#submitCode');//提交验证码按钮
+   		    //当登录成功之后，显示短信验证
+   		    function successLogin(data){
+				$('.login_common_1').css('display','none');
+				$('.login_common_2').css('display','block');
+				sendCode.bind('click',yImage);
+   		        //yCode();//登陆成功自动发送AJAX
+   		    }
+   	       	
+   	       	function yImage(){
+   	       		sendCode.unbind('click');
+				$('.login_common_1').css('display','none');
+				$('.login_common_2').css('display','none');
+				$('.login_common_3').css('display','block');
+   	       		changeCode();
+
+   	       	}
+
+   		    //发送手机验证码
+   		    function yCode(){
+   		    	if(isEmpty($("#validatecode").val())){
+                	$("#login_error_id_1").show();
+                	$("#login_error_id_2").html("请输入图形码"); 
+   		    		return;
+   		    	}
+		   			$.ajax({
+   	   	   				type:"POST",
+   	   	   				url:"../gwserver.do",
+   	   	   				dataType:"json",
+   	   	   				contentType:"application/json",
+   	   	   				data:JSON.stringify(new createSendJson(localstorage.token,$("#userName").val(),$("#validatecode").val(),$("#serverImageRandom_taskid").val())),
+	   	   	   			success:function(data){ 
+	   	   	   				if(data.resCode=='GW0006'||data.resCode=='GW0005'||data.resCode=='GW0004'||data.resCode=='GW0003'){
+	   	   	   					window.location.reload(true);
+	   	   	   				}else{
+	                            if(data.context != ''){
+	                                if(data.context.body.returnCode.type== 'S'){
+	                                	$("#login_error_id_2").html(""); 
+	                                	phoneTaskId = data.context.body.taskId;
+	                    				$('.login_common_2').css('display','block');
+	                    				$('.login_common_3').css('display','none');	   
+	                    				onOff = false;
+	                    				var time = 60;
+	                   		            var iTimer;
+	                   		            clearInterval(iTimer);
+	                   		            //sendCode.css('background','#ccc');
+	                   		            sendCode.html(time +'s');
+	                   		            iTimer  = setInterval(function () {
+	                   		                time--;
+	                   		                //sendCode.css('background','#ccc');
+	                   		                sendCode.html(time +'s');
+	                   		                if(time < 0){
+	                   		                	phoneTaskId = null;
+	                   		                    clearInterval(iTimer);
+	                   		                 	$("#login_error_id_2").html(""); 
+	                   		                    //sendCode.css('background','#0a71d6');
+	                   		                 	sendCode.bind('click',yImage);
+	                   		                    sendCode.html('<button type="button" class="btn1" style="font-size:14px;width:114px;" >重新获取验证码</button>');
+	                   		                }
+	                   		            },1000);
+	                                }
+	                            }else{
+		                        	$("#login_error_id_1").show();
+		                        	$("#login_error_id_2").html(data.resMessage+''); 
+	                            }
+	   	   	   				}
+	   	   	   			}
+   		   			});
+   		    }   	       	
+   	       	
+   		    //提交验证码
+   		    function tCode() {
+	           	$("#login_error_id_1").hide();
+   	            $("#login_error_id_2").html('');  
+   		        var codeNum = $('#validatecode_phone').val();
+    		    if(phoneTaskId==null||phoneTaskId==undefined){
+                	$("#login_error_id_1").show();
+                	$("#login_error_id_2").html('请重新发送短信'); 
+                	return;
+   		        } 
+   		        if(isEmpty(codeNum)){
+                	$("#login_error_id_1").show();
+                	$("#login_error_id_2").html('验证码不能为空'); 
+   		        }else{
+   		   			$.ajax({
+   	   	   				type:"POST",
+   	   	   				url:"../gwserver.do",
+   	   	   				dataType:"json",
+   	   	   				contentType:"application/json",
+   	   	   				data:JSON.stringify(new createValidateJson(localstorage.token,$("#userName").val(),codeNum,phoneTaskId)),
+	   	   	   			success:function(data){ 
+	   	   	   				if(data.resCode=='GW0006'||data.resCode=='GW0005'||data.resCode=='GW0004'||data.resCode=='GW0003'){
+	   	   	   					window.location.reload(true);
+	   	   	   				}else{
+	                            if(data.context != ''){
+	                                if(data.context.body.returnCode.type== 'S'){
+	                                	showBg("正在登陆...");
+	                                	localstorage.setItem('token_flag','1');
+	                                	window.location.href = "index.html";
+	                                }else{
+	                                	$("#login_error_id_1").show();
+	                                	$("#login_error_id_2").html(data.context.body.returnCode.message+''); 	                                	
+	                                }
+	                            }else{
+	                            	window.location.reload(true);
+	                            }
+	   	   	   				}
+	   	   	   			}
+   		   			});   		        	
+   		        }
+   		    }
+   		    //检测是否为空
+   		    function isEmpty(str) {
+   		        str = str.replace(/(^\s*)|(\s*$)/g, '');
+   		        if (str == '') {
+   		            return true;
+   		        }
+   		        return false;
+   		    };
+   			function register(){
+   				showBg("正在跳转...");
+   				window.location.href='register.html'
+   			}
+   			
+   			//获取随机图片
+   			function changeCode(){  				
+	   			$.ajax({
+   	   				type:"POST",
+   	   				url:"../gwserver.do",
+   	   				dataType:"json",
+   	   				contentType:"application/json",
+   	   				data:"{\"sessionId\":\"\",\"encryptType\":\"0\",\"context\":{\"head\":{\"userAgent\":\"Android\",\"imageCode\":\"\",\"type\":\"GWRANDOM\",\"version\":\"1.0\",\"randomTaskId\":\"\",\"serviceId\":\"lcbp\",\"appVersion\":\"1\",\"token\":\"\",\"userId\":\"\",\"randomCode\":\"\",\"appType\":\"lcbp\",\"channel\":\"01\",\"checkTokenFlag\":\"0\",\"imageTaskId\":\"\"},\"body\":{\"type\":\"1\",\"randomLength\":\"16\"}}}",
+   	   				success:function(data){  
+							try{
+								if(data.resCode == 'S'){
+	   								var random_image = data.context.image;
+	   								var taskid = data.context.taskId;
+	   								$("#serverImageRandom_taskid").val(taskid);
+	   								$("#create_image_id").attr('src',"data:;base64,"+random_image); 
+	   								hiddenBg();
+								}else{
+									$("#serverImageRandom_taskid").val("");
+				                	$("#login_error_id_1").show();
+				                	$("#login_error_id_2").html('获取随机图片错误'); 
+				                	hiddenBg();
+								}
+   							}catch(e){
+   			                	$("#login_error_id_1").show();
+   			                	$("#login_error_id_2").html('获取随机图片错误'); 
+   			                	hiddenBg();
+ 							}   	   									
+   	   				}
+	   			});
+   			}   			
+   		</script>
+					
+		<input type="hidden" id="serverRandom" name="serverRandom"  value="" />
+		<input type="hidden" id="serverRandom_taskid" name="serverRandom_taskid"  value="" />
+		<input type="hidden" id="serverImageRandom" name="serverImageRandom"  value="" />
+		<input type="hidden" id="serverImageRandom_taskid" name="serverImageRandom_taskid"  value="" />		
+	</body>
+</html>

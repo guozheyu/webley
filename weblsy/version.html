@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-control" content="no-cache">
+		<meta http-equiv="Cache" content="no-cache">		
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>中国民生银行收银台</title>
+    	<link rel="stylesheet" href="css/bootstrap.css" >
+    	<link rel="stylesheet" href="css/bootstrap-responsive.css" >
+   	 	<link rel="stylesheet" href="css/iconfont.css?99" >
+   	 	<link rel="stylesheet" href="css/styles.css?99">
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	    <!--[if lt IE 9]>
+	      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	    <style>
+	    	@media (max-width: 480px) {
+			.footer{
+				position: relative;
+				font-size: 12px;
+				margin-top: 10px;
+			}
+		}
+	    </style>
+	</head>
+	<body style="height: 300px;">
+		<div class="navbar navbar-inverse navbar-static-top nav-style" style="position:absolute; width:100%; left:0; top:0; overflow:hidden;">
+			<div class="navbar-inner navbar-header">
+				<div class="container">
+					<a class="brand logo-padd" href="javascript:void(0);"><img src="img/logo.png" style="border: 0px;" width="240"></a>
+					<div class="top-info" id="top_info_id">
+						<a class="logout" href="javascript:void(0);" onclick="quitLogin()"  style="visibility: hidden;">退出</a>
+						<!-- <a class="change-password" href="javascript:void(0);" onclick="changePassword()"  style="visibility: hidden;">修改密码</a> -->
+						<div class="pull-right username"  style="visibility: hidden;">
+							<i class="iconfont">&#xe600;</i>
+							<span>收款商户：***</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container"  style="padding-top:80px;">
+			<div class="payment-box common_show_id" style="height: 260px;" >
+				<div class="m-test">
+					<div class="paddingb32 paddingl paddingt20">
+						<i class="iconfont paysucc-icon colorg">&#xe62e;</i>
+						<span class="sign">版本信息说明</span>
+					</div>
+					<div class="paddingl68">
+						<p class="font16" id="version_new_id">当前版本： v0.0</p>
+						<p class="font16">最新版本： v1.0</p>
+						<p class="font16">更新信息： 新版本发布</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/util/money.js" ></script>
+		<script type="text/javascript" src="js/util/common.js" ></script>		
+		<script type="text/javascript">
+			//document.body.addEventListener('touchstart', function () { });  //保证手机端按钮或链接active效果
+
+			var storage;
+			var localstorage;
+			$(function(){
+				storage = window.sessionStorage;//本地session存储
+				localstorage = window.localStorage;//本地local存储
+				var v = getUrlParam("v");
+				$("#version_new_id").html("当前版本： v"+v)
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-control" content="no-cache">
+		<meta http-equiv="Cache" content="no-cache">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>中国民生银行收银台</title>
+    	<link rel="stylesheet" href="css/bootstrap.css" >
+    	<link rel="stylesheet" href="css/bootstrap-responsive.css" >
+   	 	<link rel="stylesheet" href="css/iconfont.css" >
+   	 	<link rel="stylesheet" href="css/styles.css">
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	    <!--[if lt IE 9]>
+	      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	    <style>
+	    	@media (max-width: 480px) {
+			.footer{
+				position: relative;
+				font-size: 12px;
+				margin-top: 10px;
+			}
+		}
+	    </style>
+	</head>
+	<body style="width:99.0%;height: 300px;">
+		<div class="navbar navbar-inverse navbar-static-top nav-style" style="position:absolute; width:100%; left:0; top:0; overflow:hidden;">
+			<div class="navbar-inner navbar-header">
+				<div class="container">
+					<a class="brand logo-padd" href="javascript:void(0);"><img src="img/logo.png" style="border: 0px;" width="240"></a>
+					<div class="top-info" id="top_info_id" >
+						<a class="logout" href="javascript:void(0);" onclick="quitLogin()">退出</a>
+						<!-- <a class="change-password" href="javascript:void(0);" onclick="changePassword()">修改密码</a> -->
+						<div class="pull-right username">
+							<i class="iconfont">&#xe600;</i>
+							<span id="user_name_id">收款商户：***</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container" style="padding-top:80px;">
+			<div class="order-info common_show_id" style="padding-top: 13px;padding-bottom: 13px;">
+				<div class="pull-left"><span></span></div>
+				<div class="pull-right" id="merchant_name_id">收款商户：***********公司</div>
+			</div>
+			<div class="sum-info common_show_id" >
+				<span >应付金额</span>
+				<input type="text" id="money_id" value="0.00" />
+				<span>元</span>
+				<div class="cue" id="error_message_id">&nbsp;</div>
+			</div>
+			<div class="payment-box common_show_id" style="margin-top: 0px;">
+				<div class="tag-pos"><img src="img/saomazhifu.png"></div>
+				<ul class="payment" style="margin: 0 0 0 25px;">
+					<li style="cursor:pointer;" onclick="order(7)">
+						<span class="iconfont iconfont-bg bg-00aaee">&#xe601;</span>
+						<span class="pay-name" id="pay_7">支付宝扫码付</span>
+						<span class="cut-off">|</span>
+					</li>
+					<li style="cursor:pointer;" onclick="order(4)">
+						<span class="iconfont iconfont-bg bg-09bb07">&#xe602;</span>
+						<span class="pay-name"  id="pay_4">微信扫码付</span>
+					</li>
+				</ul>
+			</div>
+			<div class="payment-box common_show_id" style="height: 107px;margin-top: 22px;">
+				<div class="tag-pos"><img src="img/qitazhifu.png"></div>
+				<ul class="payment" style="margin: 0 0 0 25px;">
+					<li style="cursor:pointer;" onclick="order(3)">
+						<span class="pay-name" id="pay_3">微信二维码</span>
+						<span class="cut-off">|</span>
+					</li>
+					<li style="cursor:pointer;" onclick="order(6)">
+						<span class="pay-name" id="pay_6">支付宝二维码</span>
+						<span class="cut-off">|</span>
+					</li>
+<!-- 					<li>
+						<span class="pay-name">QQ钱包支付</span>
+						<span class="cut-off">|</span>
+					</li>
+					<li>
+						<span class="pay-name">华夏银行</span>
+						<span class="cut-off">|</span>
+					</li>
+					<li>
+						<span class="pay-name">光大银行</span>
+					</li> -->
+				</ul>
+			</div>
+			<div class="sub" id="loading_id" style="display: none">
+				<img src="img/MSLoad1.gif" class="s-img"></img>
+				<p id="loading_msg_id">正在提交...</p>
+			</div>			
+		</div>
+		<div class="footer" id="footer_id">
+			Copyright&copy;版权所有&nbsp;中国民生银行&nbsp;|&nbsp;24小时客服服务热线 95568
+		</div>
+		<script src="js/jquery.min.js"></script>
+    	<script src="js/bootstrap.js"></script>
+   		<script src="js/json2.js" ></script>
+   		<script type="text/javascript" src="js/weblsylogin.js?v=1.0" ></script>
+   		<script type="text/javascript" src="js/weblsy.js?v=1.0" ></script>
+		<script type="text/javascript" src="js/security/one.js" ></script>
+		<script type="text/javascript" src="js/security/aes.js" ></script>
+		<script type="text/javascript" src="js/security/mode-ecb.js" ></script>
+		<script type="text/javascript" src="js/util/money.js?v=1.0" ></script>
+		<script type="text/javascript" src="js/util/common.js?v=1.0" ></script>
+   		<script type="text/javascript">
+   				var com_path = "../../appweb";
+   				function moneyFoucs(){
+   					$('#money_id').focus();
+   					$('#money_id').val();
+   				}		
+   				var strR1 = "";//8位随机数
+				var businessData = new BusinessData();
+				var storage;
+				var localstorage;
+				var RSA_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC2Q5gWNOwpd5Jf/DFkBXr2pxW75JhVQpejlnxdItHwhbXFevtEBKj8ZZivh8UAtkui1icwA6Ej3RDvqQEHaAi/U/iaMK2Cg5+HG+m6FzhhUC2NHrxPljHChA5oinzqLMelXouMjcxqSyGsdvysIPhBj7K7f1WhJgH6/LEZtfcNQQIDAQAB";
+		   		$(function(){
+		   			showBg("页面加载中...");
+		   			localstorage = window.localStorage;//本地local存储
+		   			storage = window.sessionStorage;//本地session存储
+		   			storage.clear();  
+		   			//是否取消copyright
+		   			var hiddenflag=localstorage.getItem("hiddenflag");
+		   			if(hiddenflag==null){
+			   			var v = getUrlParam("f");
+			   			if(v==1|| v=='1'){
+			   				$('#footer_id').hide();
+			   				localstorage.setItem('hiddenflag',1);
+			   			}else{
+			   				localstorage.setItem('hiddenflag',0);
+			   			}
+		   			}else if(hiddenflag=='1'){
+		   				$('#footer_id').hide();
+		   			}
+
+		   			var token=localstorage.getItem("token");
+		   			//验证是否登录
+		   			if(token==null){
+		   				window.location.href="login.html";//未登录
+		   				return;
+		   			}
+		   			//验证是否登录确认
+		   			var token_flag=localstorage.getItem("token_flag");
+		   			if(token_flag=='0' || token_flag==null){
+		   				window.location.href="login.html";//未登录
+		   				return;
+		   			}
+		   			 					
+   					var userChName = localstorage.getItem("userChName");
+   					$("#user_name_id").html("收款商户："+userChName);
+   					$("#merchant_name_id").html("收款商户："+userChName);
+   					hiddenBg();
+					$('#money_id').focus();
+		   		});
+		   		
+   				//document.body.addEventListener('touchstart', function () { });  //保证手机端按钮或链接active效果
+   				//允许手动输入
+   				function okInput(){
+   					//可以手动输入并获取焦点
+   					$("#money_id").removeAttr("disabled");
+   					$('#money_id').focus();
+   				}
+   				
+   				//3微信正扫  4微信反扫   6支付宝正扫  7支付宝反扫
+   				function order(type){
+   					//1----------------------校验数据-----------
+   					var money_str = $("#money_id").val();
+   					var reg = /^\d+(?:\.\d{1,2})?$/;
+   					if(!reg.test(money_str)){
+   						$("#error_message_id").html("请输入正确的金额！");
+   						//alert("请输入正确的金额！");
+   						return;
+   					}
+   					if(Number(money_str)<=0 || Number(money_str)>=10000000){
+   						$("#error_message_id").html("请输入大于0,并小于1000万的金额！");
+   						//alert("请输入大于0,并小于1000万的金额！");
+   						return;
+   					}
+   					//2----------------------支付其他-----------
+   					storage.setItem('tradeType',type+"");//支付方式
+   					var token = localstorage.getItem("token");
+   					var accountNo = localstorage.getItem("userId");
+   					//3----------------------支付提交-----------
+   					showBg("正在提交...");
+   					//1**************************************获取密文**************************************
+   					var miwen = "";
+   	   				$.ajax({
+   	   					type:"POST",
+   	   					url:"../gwserver.do",
+   	   					dataType:"json",
+   	   					contentType:"application/json",//token,userId,amount,accountNo,accountType,defaultTradeType,selectTradeType
+   	   					data:JSON.stringify(new createMiwenJson(token,accountNo,money_str.parseYuan2Fen(),accountNo,"02","1","1")),
+   	   					success:function(data){
+   							var initParams;
+   							try{
+   		  						var miwenResult = data;
+   		  						if(miwenResult==null || miwenResult=='' || miwenResult ==undefined){
+   	   								hiddenBg();
+   	   								$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		  							return ;
+   		  						}
+   		  						var miwenObject = data; 
+   		  						if(miwenObject.resCode!='S'){
+    		  						if(miwenObject.resCode == 'GW0002' ||miwenObject.resCode == 'GW0003'||miwenObject.resCode == 'GW0004'||miwenObject.resCode == 'GW0005'||miwenObject.resCode == 'GW0006' ){//登录
+   		  								window.location.href = "login.html";
+   		  								return;
+   		  							}
+   	   								hiddenBg();
+   	   								$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		  							return;
+   		  						}else{
+   	   		  						
+   	   		  						$("#time_id").val(new Date().Format("yyyyMMddHHmmssS"));
+   	   		  						miwen = miwenObject.context.body;
+   	   		  						//获取8位随机数
+   	   		  						var str = "";
+									for (var index = 0; index < 16; index++) {
+										str = done(str);
+									}
+   	   		  						strR1 = str;
+   	   		  						businessData.tokenKey=strR1;
+   	   		  						//秘钥
+   	   		  						var publicKey = RSA_PUBLIC_KEY;
+   	   		  						var r1json = "{\"randCipher\":\""+strR1+"\"}";
+   	   		  						var encrypt = new JSEncrypt();
+   	   		  						encrypt.setPublicKey(publicKey);
+   	   		  						var encryptRequestBody = encrypt.encrypt(r1json);// 对r1进行rsa进行加密
+   	   		  						initParams = getRequestJson(encryptRequestBody,businessData);
+   		  						}
+
+
+   							}catch(lcbpe){
+   								hiddenBg();
+   								$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   								return;
+   							}
+   							//2**************************************获取sessionkey**************************************
+		   	   				var init_url_temp = com_path+"/appserver/init2.do";
+   							$.ajax({
+		   	   					type:"POST",
+		   	   					url:init_url_temp,
+		   	   					dataType:"json",
+		   	   					contentType:"application/json",
+		   	   					data:JSON.stringify(initParams),
+		   	   					success:function(data){
+   										var showpathParams;
+   										try{
+   		  									var result = data;
+   		  									if(result==undefined){
+   		  										hiddenBg();
+   		  										$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		  										return;
+   		  									}
+   		  									var jsonObject = data; 
+   		  									//判断状态
+   		  									var jsonObject_msg = getStatusMsg(jsonObject);
+   		  									if(jsonObject_msg!=0){
+   		  										hiddenBg();
+   		  										$("#error_message_id").html(jsonObject_msg);
+   		  										return;
+   		  									}
+   		  									
+   		  									var businessContext = jsonObject.businessContext
+   		  									//AES解密
+   		  									var key = CryptoJS.enc.Utf8.parse(strR1);  //
+   		  		    						var iv  = CryptoJS.enc.Utf8.parse('');  //
+   		  								    var encryptedHexStr = CryptoJS.enc.Hex.parse(businessContext);
+   		  								    var srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+   		  								    var decrypt = CryptoJS.AES.decrypt(srcs, key, { iv: iv,mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+   		  								    var responseJson_ = decrypt.toString(CryptoJS.enc.Utf8); 
+   		  								    
+   		  								    var responseJson = JSON.parse(responseJson_);
+   		  									
+   		  									var tokenId = responseJson.tokenId;
+   		  									var strR2 = responseJson.randCipher;
+   		  									//alert(strR2);
+   		  									
+   		  									if(strR2.length == 16){
+   		  										var strTokenKey = strR1.substring(0,8)+strR2.substring(8,16);
+   		  										businessData.tokenKey=strTokenKey;
+   		  									}
+   		  									businessData.tokenId=tokenId;
+   		  									
+   		  									if(tokenId==undefined){
+   		  										hiddenBg();
+   		  										$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		  										return;
+   		  									}
+   		  									showpathParams = getRequestJson(miwen,businessData);
+   		  									
+   										}catch(inite){
+   											hiddenBg();
+   											$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   											return;
+   										}
+ 
+   									//3**************************************解密解签**************************************
+ 		   	   						var showpath_url_temp = com_path+"/appserver/showpath.do";
+   									$.ajax({
+		   	   							type:"POST",
+		   	   							url:showpath_url_temp,
+		   	   							dataType:"json",
+		   	   							contentType:"application/json",
+		   	   							data:JSON.stringify(showpathParams),
+		   	   							success:function(data){
+   											try{
+   												var jiemi_result = data;
+   												if(jiemi_result==undefined){
+   													hiddenBg();
+   													$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   													return;
+   												}
+   												var jiemi_jsonObject = data; 
+   												
+   	   		  									//判断状态
+   	   		  									var jiemi_jsonObject_msg = getStatusMsg(jiemi_jsonObject);
+   	   		  									if(jiemi_jsonObject_msg!=0){
+   	   		  										hiddenBg();
+   	   		  										$("#error_message_id").html(jiemi_jsonObject_msg);
+   	   		  										return;
+   	   		  									}
+   												
+   												var jiemi_businessContext = jiemi_jsonObject.businessContext;
+   												
+   												//AES解密
+   												var jiemi_key = CryptoJS.enc.Utf8.parse(businessData.tokenKey);  //
+   					    						var jiemi_iv  = CryptoJS.enc.Utf8.parse('');  //
+   											    var jiemi_encryptedHexStr = CryptoJS.enc.Hex.parse(jiemi_businessContext);
+   											    var jiemi_srcs = CryptoJS.enc.Base64.stringify(jiemi_encryptedHexStr);
+   											    var jiemi_decrypt = CryptoJS.AES.decrypt(jiemi_srcs, jiemi_key, { iv: jiemi_iv,mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+   											    var jiemi_responseJson_ = jiemi_decrypt.toString(CryptoJS.enc.Utf8); 
+   											    
+   											    if(jiemi_responseJson_==undefined || jiemi_responseJson_==""){
+   													hiddenBg();
+   													$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   													return;
+   											    }
+   											    var jiemi_responseJson = JSON.parse(jiemi_responseJson_);
+   											    var returnBackJson = jiemi_responseJson.returnBackJson;
+   											    businessData.returnBackJson=returnBackJson;
+   											    
+   											    storage.businessData = JSON.stringify(businessData);//本地存储
+   											    storage.orderInfoJson = jiemi_responseJson_;
+   											    
+   											    if(type==4||type==7){
+   											    	window.location.href = "scan.jsp";
+   											    }else if(type==3||type==6){
+   											    	window.location.href = "er-code.jsp";
+   											    }else{
+   											    	hiddenBg();
+   	   		   										$("#error_message_id").html("请选择正确的支付方式");
+   	   		   										return;
+   											    }
+   											    
+   											}catch(showpathe){
+   		   										hiddenBg();
+   		   										$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		   										return;
+   											}
+   										},
+   		  			   					error : function() {// 调用出错执行的函数
+   		  			   						hiddenBg();
+   		  			   						$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   		  			   						return;
+   		  			   					}
+   		  			   	   			});  
+   			   	   				},
+  			   					error : function() {// 调用出错执行的函数
+  			   						hiddenBg();
+  			   						$("#error_message_id").html("服务器繁忙，请稍后再试！");
+  			   						return;
+  			   					}
+  			   	   			});   								
+   						},
+   						error : function() {// 调用出错执行的函数
+   							hiddenBg();
+   							$("#error_message_id").html("服务器繁忙，请稍后再试！");
+   							return;
+   						}
+   					});
+   				}
+
+   	   			//商户信息
+   	   			var MerchantData =function(){
+   					this.merchantName="";//商户名称
+   					this.merchantNum="";//商户编号
+   					this.merchantMobile="";//商户手机号
+   					this.tradeType="";//支付方式
+   				}
+   				
+   		</script>
+   		
+		<input type="hidden" id="time_id" value="">
+	</body>
+</html>
